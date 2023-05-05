@@ -26,6 +26,8 @@ class Parser {
     static final String C_RETURN = "C_RETURN";
     static final String C_CALL = "C_CALL";
 
+    static final String CONSTANT ="constant";
+
     Parser(File VM_File) {
         StringBuilder stringBuilder = new StringBuilder();
         try {

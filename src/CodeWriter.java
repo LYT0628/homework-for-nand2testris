@@ -18,6 +18,19 @@ class CodeWriter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        try {
+            bw.write("@256");
+            bw.newLine();
+            bw.write("D=A");
+            bw.newLine();
+            bw.write("@SP");
+            bw.newLine();
+            bw.write("M=D");
+            bw.newLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     CodeWriter() {
@@ -67,19 +80,51 @@ class CodeWriter {
 
     public void writePushPop(String Type, String command) {
         if (Parser.C_PUSH.equals(Type)) {
-            try {
-                bw.write(Type + command);
-                bw.newLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            String[] arg=command.trim().split(" ");
+            if (Parser.CONSTANT.equals(arg[1])){
+                try {
+                    bw.write("@"+arg[2]);
+                    bw.newLine();
+                    bw.write("D=A");
+                    bw.newLine();
+                    bw.write("@tmp");
+                    bw.newLine();
+                    bw.write("M=D");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("D=M");
+                    bw.newLine();
+                    bw.write("@tmp");
+                    bw.newLine();
+                    bw.write("D=D+M");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("D=D-M");
+                    bw.newLine();
+                    bw.write("A=M");
+                    bw.newLine();
+                    bw.write("M=D");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("M=M+1");
+                    bw.newLine();
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
+
         } else if (Parser.C_POP.equals(Type)) {
-            try {
-                bw.write(Type + command);
-                bw.newLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                bw.write(Type + command);
+//                bw.newLine();
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
         }
     }
 
