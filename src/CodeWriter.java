@@ -54,15 +54,82 @@ class CodeWriter {
     public void writeArithtic(String command) {
         if (Parser.ADD.equals(command)) {
             try {
-                bw.write("add");
+                //stack.pop
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("M=M-1");
+                bw.newLine();
+                //D=stack.top
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("A=M");
+                bw.newLine();
+                bw.write("D=M");
+                bw.newLine();
+                //stack.pop
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("M=M-1");
+                bw.newLine();
+                //D=D+stack.top
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("A=M");
+                bw.newLine();
+                bw.write("D=D+M");
+                bw.newLine();
+                //stack.push(D)
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("A=M");
+                bw.newLine();
+                bw.write("M=D");
+                bw.newLine();
+                //sp++
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("M=M+1");
                 bw.newLine();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else if (Parser.SUB.equals(command)) {
             try {
-                bw.write("sub");
-
+                //stack.pop
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("M=M-1");
+                bw.newLine();
+                //D=stack.top
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("A=M");
+                bw.newLine();
+                bw.write("D=M");
+                bw.newLine();
+                //stack.pop
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("M=M-1");
+                bw.newLine();
+                //D=D+stack.top
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("A=M");
+                bw.newLine();
+                bw.write("D=M-D");
+                bw.newLine();
+                //stack.push(D)
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("A=M");
+                bw.newLine();
+                bw.write("M=D");
+                bw.newLine();
+                //sp++
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("M=M+1");
                 bw.newLine();
             } catch (IOException e) {
                 throw new RuntimeException(e);
