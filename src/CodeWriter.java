@@ -95,7 +95,7 @@ class CodeWriter {
             }
         } else if (Parser.SUB.equals(command)) {
             try {
-                //stack.pop
+                //sp--
                 bw.write("@SP");
                 bw.newLine();
                 bw.write("M=M-1");
@@ -112,7 +112,7 @@ class CodeWriter {
                 bw.newLine();
                 bw.write("M=M-1");
                 bw.newLine();
-                //D=D+stack.top
+                //D=stack.top-D
                 bw.write("@SP");
                 bw.newLine();
                 bw.write("A=M");
@@ -136,12 +136,48 @@ class CodeWriter {
             }
         } else if (Parser.NEG.equals(command)) {
             try {
-                bw.write("NEG");
+                //sp--
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("M=M-1");
+                bw.newLine();
+                //D=stack.top
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("A=M");
+                bw.newLine();
+                bw.write("D=M");
+                bw.newLine();
 
+                bw.write("D=-D");
+                bw.newLine();
+                //stack.push(D)
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("A=M");
+                bw.newLine();
+                bw.write("M=D");
+                bw.newLine();
+                //sp++
+                bw.write("@SP");
+                bw.newLine();
+                bw.write("M=M+1");
                 bw.newLine();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }else if (Parser.EQ.equals(command)){
+
+        }else if (Parser.LT.equals(command)){
+
+        } else if (Parser.GT.equals(command)) {
+
+        } else if (Parser.AND.equals(command)) {
+
+        } else if (Parser.OR.equals(command)) {
+
+        }else if (Parser.NOT.equals(command)){
+
         }
     }
 
