@@ -7,6 +7,7 @@ import java.io.IOException;
 
 class CodeWriter {
     static int LABEL_COUNT=0;
+
     BufferedWriter bw;
 
 
@@ -581,15 +582,73 @@ class CodeWriter {
                     throw new RuntimeException(e);
                 }
 
+            }else if (Parser.LOCAL.equals(command.split(" ")[1])||
+                    Parser.ARGUMENT.equals(arg[1])||
+                    Parser.THIS.equals(arg[1])||
+                    Parser.THAT.equals(arg[1])){
+                try {
+                    if (Parser.LOCAL.endsWith(command.split(" ")[1]))
+                        bw.write("@1");
+                    else if (Parser.ARGUMENT.endsWith(command.split(" ")[1]))
+                        bw.write("@2");
+                     else if (Parser.THIS.equals(command.split(" ")[1]))
+                        bw.write("@3");
+                     else if (Parser.THAT.equals(command.split(" ")[1]))
+                         bw.write("@4");
+                    bw.newLine();
+                    bw.write("A=M");
+                    bw.newLine();
+                    bw.write("D=A");
+                    bw.newLine();
+                    bw.write("@"+command.split(" ")[2]);
+                    bw.newLine();
+                    bw.write("D=D+A");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("A=M");
+                    bw.newLine();
+                    bw.write("M=D");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("M=M+1");
+                    bw.newLine();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if (Parser.TEMP.equals(arg[1])||
+                    Parser.POINT.equals(arg[1])){
+                try {
+                    if (Parser.TEMP.equals(command.split(" ")[1]))
+                        bw.write("@5");
+                    else if (Parser.POINT.equals(command.split(" ")[1]))
+                        bw.write("@3");
+                    bw.newLine();
+                    bw.write("D=A");
+                    bw.newLine();
+                    bw.write("@"+command.split(" ")[2]);
+                    bw.newLine();
+                    bw.write("D=D+A");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("A=M");
+                    bw.newLine();
+                    bw.write("M=D");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("M=M+1");
+                    bw.newLine();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         } else if (Parser.C_POP.equals(Type)) {
-//            try {
-//                bw.write(Type + command);
-//                bw.newLine();
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
+            
         }
     }
 

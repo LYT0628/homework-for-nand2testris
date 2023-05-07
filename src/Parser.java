@@ -27,6 +27,13 @@ class Parser {
     static final String C_CALL = "C_CALL";
 
     static final String CONSTANT ="constant";
+    static final String ARGUMENT ="argument";
+    static final String LOCAL = "local";
+    static final String THIS = "this";
+    static final String THAT ="that";
+    static final String STATIC = "static";
+    static final String POINT ="point";
+    static final String TEMP ="temp";
 
     Parser(File VM_File) {
         StringBuilder stringBuilder = new StringBuilder();
