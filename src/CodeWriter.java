@@ -7,7 +7,7 @@ import java.io.IOException;
 
 class CodeWriter {
     static int LABEL_COUNT=0;
-
+    String filename;
     BufferedWriter bw;
 
 
@@ -16,6 +16,7 @@ class CodeWriter {
             if (!asm_File.exists()) {
                 asm_File.createNewFile();
             }
+            filename=asm_File.getName().split("\\.")[0];
             bw = new BufferedWriter(new FileWriter(asm_File));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -545,8 +546,8 @@ class CodeWriter {
     }
 
     public void writePushPop(String Type, String command) {
+        String[] arg=command.trim().split(" ");
         if (Parser.C_PUSH.equals(Type)) {
-            String[] arg=command.trim().split(" ");
             if (Parser.CONSTANT.equals(arg[1])){
                 try {
                     bw.write("@"+arg[2]);
@@ -645,10 +646,136 @@ class CodeWriter {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            } else if (Parser.SP.equals(arg[1])) {
+                System.out.println("哈哈海");
+            } else if (Parser.STATIC.equals(arg[1])) {
+                try {
+                    bw.write("@"+filename+"."+arg[2]);
+                    bw.newLine();
+                    bw.write("D=M");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("A=M");
+                    bw.newLine();
+                    bw.write("M=D");
+                    bw.newLine();
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("M=M+1");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-
         } else if (Parser.C_POP.equals(Type)) {
-            
+            if (Parser.LOCAL.equals(command.split(" ")[1])||
+                    Parser.ARGUMENT.equals(arg[1])||
+                    Parser.THIS.equals(arg[1])||
+                    Parser.THAT.equals(arg[1])){
+                try {
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("A=A-1");
+                    bw.newLine();
+                    bw.write("D=M");
+                    bw.newLine();
+                    if (Parser.LOCAL.equals(arg[1])){
+                        bw.write("@LCL");
+                        bw.newLine();
+                        bw.write("A=M");
+                        bw.newLine();
+                        bw.write("A=A+"+arg[2]);
+                        bw.newLine();
+                        bw.write("M=D");
+                        bw.newLine();
+                        bw.write("@LCL");
+                        bw.newLine();
+                        bw.write("M=M+1");
+                        bw.newLine();
+                    } else if (Parser.ARGUMENT.equals(arg[1])) {
+                        bw.write("@ARG");
+                        bw.newLine();
+                        bw.write("A=M");
+                        bw.newLine();
+                        bw.write("A=A+"+arg[2]);
+                        bw.newLine();
+                        bw.write("M=D");
+                        bw.newLine();
+                        bw.write("@ARG");
+                        bw.newLine();
+                        bw.write("M=M+1");
+                        bw.newLine();
+                    }else if (Parser.THIS.equals(arg[1])){
+                        bw.write("@THIS");
+                        bw.newLine();
+                        bw.write("A=M");
+                        bw.newLine();
+                        bw.write("A=A+"+arg[2]);
+                        bw.newLine();
+                        bw.write("M=D");
+                        bw.newLine();
+                        bw.write("@THIS");
+                        bw.newLine();
+                        bw.write("M=M+1");
+                        bw.newLine();
+                    } else if (Parser.THAT.equals(arg[1])) {
+                        bw.write("@THAT");
+                        bw.newLine();
+                        bw.write("A=M");
+                        bw.newLine();
+                        bw.write("A=A+"+arg[2]);
+                        bw.newLine();
+                        bw.write("M=D");
+                        bw.newLine();
+                        bw.write("@THAT");
+                        bw.newLine();
+                        bw.write("M=M+1");
+                        bw.newLine();
+                    }
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("M=M-1");
+                    bw.newLine();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }else if (Parser.POINT.equals(arg[1])||
+                    Parser.TEMP.equals(arg[1])){
+                try {
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("A=A-1");
+                    bw.newLine();
+                    bw.write("D=M");
+                    bw.newLine();
+                    if (Parser.POINT.equals(arg[1])){
+                        bw.write("@3");
+                        bw.newLine();
+                        bw.write("A=M");
+                        bw.newLine();
+                        bw.write("A=A+"+arg[2]);
+                        bw.newLine();
+                        bw.write("M=D");
+                        bw.newLine();
+                    }else if (Parser.TEMP.equals(arg[1])){
+                        bw.write("@5");
+                        bw.newLine();
+                        bw.write("A=M");
+                        bw.newLine();
+                        bw.write("A=A+"+arg[2]);
+                        bw.newLine();
+                        bw.write("M=D");
+                        bw.newLine();
+                    }
+                    bw.write("@SP");
+                    bw.newLine();
+                    bw.write("M=M-1");
+                    bw.newLine();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
         }
     }
 

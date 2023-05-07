@@ -34,6 +34,7 @@ class Parser {
     static final String STATIC = "static";
     static final String POINT ="point";
     static final String TEMP ="temp";
+    static final String SP ="SP";
 
     Parser(File VM_File) {
         StringBuilder stringBuilder = new StringBuilder();
