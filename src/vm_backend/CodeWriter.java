@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 class CodeWriter {
-
     static int LABEL_COUNT=0;
     String filename;
     BufferedWriter bw;
@@ -65,109 +64,36 @@ class CodeWriter {
             arimatic_logic_1operator("D=!D");
         }
     }
-
     public void writePushPop(String Type, String command) {
         String[] arg=command.trim().split(" ");
         if (Parser.C_PUSH.equals(Type)) {
             if (Parser.CONSTANT.equals(arg[1])){
-                try {
-                    bw.write("@"+arg[2]);
-                    bw.newLine();
-                    bw.write("D=A");
-                    bw.newLine();
-                    bw.write("@tmp");
-                    bw.newLine();
-                    bw.write("M=D");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("D=M");
-                    bw.newLine();
-                    bw.write("@tmp");
-                    bw.newLine();
-                    bw.write("D=D+M");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("D=D-M");
-                    bw.newLine();
-                    bw.write("A=M");
-                    bw.newLine();
-                    bw.write("M=D");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("M=M+1");
-                    bw.newLine();
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
+                setDRegister("@"+arg[2]);
+                pushDRegister();
             }else if (Parser.LOCAL.equals(command.split(" ")[1])||
                     Parser.ARGUMENT.equals(arg[1])||
                     Parser.THIS.equals(arg[1])||
                     Parser.THAT.equals(arg[1])){
-                try {
-                    if (Parser.LOCAL.endsWith(command.split(" ")[1]))
-                        writeLine("@1");
-                    else if (Parser.ARGUMENT.endsWith(command.split(" ")[1]))
-                        writeLine("@2");
-                     else if (Parser.THIS.equals(command.split(" ")[1]))
-                        writeLine("@3");
-                     else if (Parser.THAT.equals(command.split(" ")[1]))
-                         writeLine("@4");
-                    bw.write("A=M");
-                    bw.newLine();
-                    bw.write("D=A");
-                    bw.newLine();
-                    bw.write("@"+command.split(" ")[2]);
-                    bw.newLine();
-                    bw.write("D=D+A");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("A=M");
-                    bw.newLine();
-                    bw.write("M=D");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("M=M+1");
-                    bw.newLine();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                if (Parser.LOCAL.endsWith(command.split(" ")[1]))
+                    getAddressValue2DRegister("@LOCAL");
+                else if (Parser.ARGUMENT.endsWith(command.split(" ")[1]))
+                    getAddressValue2DRegister("@ARGUMENT");
+                 else if (Parser.THIS.equals(command.split(" ")[1]))
+                    getAddressValue2DRegister("@THIS");
+                 else if (Parser.THAT.equals(command.split(" ")[1]))
+                     getAddressValue2DRegister("@THAT");
+                indexDRegister("@"+command.split(" ")[2]);
+                getAddressValue2DRegister("@D");
+                pushDRegister();
             }
             else if (Parser.TEMP.equals(arg[1])||
                     Parser.POINT.equals(arg[1])){
-                try {
-                    if (Parser.TEMP.equals(command.split(" ")[1]))
-                        bw.write("@5");
-                    else if (Parser.POINT.equals(command.split(" ")[1]))
-                        bw.write("@3");
-                    bw.newLine();
-                    bw.write("D=A");
-                    bw.newLine();
-                    bw.write("@"+command.split(" ")[2]);
-                    bw.newLine();
-                    bw.write("D=D+A");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("A=M");
-                    bw.newLine();
-                    bw.write("M=D");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("M=M+1");
-                    bw.newLine();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else if (Parser.SP.equals(arg[1])) {
-                System.out.println("哈哈海");
+                if (Parser.TEMP.equals(command.split(" ")[1]))
+                    setDRegister("@TEMP");
+                else if (Parser.POINT.equals(command.split(" ")[1]))
+                    setDRegister("@POINT");
+                indexDRegister("@"+command.split(" ")[2]);
+                pushDRegister();
             } else if (Parser.STATIC.equals(arg[1])) {
                 try {
                     bw.write("@"+filename+"."+arg[2]);
@@ -321,10 +247,26 @@ class CodeWriter {
         writeLine("@SP");
         writeLine("M=M-1");
     }
-    private void getValue2DRegister(){
+    private void stackPointerUp(){
         writeLine("@SP");
+        writeLine("M=M+1");
+    }
+
+    private void getValue2DRegister(){
+        getAddressValue2DRegister("@SP");
+    }
+    private void getAddressValue2DRegister(String address){
+        writeLine(address);
         writeLine("A=M");
         writeLine("D=M");
+    }
+    private void setDRegister(String value){
+        writeLine(value);
+        writeLine("D=A");
+    }
+    private void indexDRegister(String index){
+        writeLine(index);
+        writeLine("D=D+A");
     }
     private void pointer2Value(){
         writeLine("@SP");
@@ -390,12 +332,5 @@ class CodeWriter {
         writeLine(word);
         pushDRegister();
     }
-    public static void main(String[] args) {
-        CodeWriter codeWriter = new CodeWriter();
-        codeWriter.setFileName("D:\\桌面\\out");
-        codeWriter.writeArithtic("add");
-        codeWriter.writePushPop(Parser.C_POP, "123456");
-        codeWriter.close();
-        System.out.println("Hello world!");
-    }
+
 }

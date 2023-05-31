@@ -4,7 +4,7 @@ import java.io.*;
 
 class Parser {
     String current_Line;
-    String next_Line;
+
     BufferedReader br;
 
     static final String ADD = "add";
@@ -25,7 +25,6 @@ class Parser {
     static final String C_FUNCTION = "C_FUNCTION";
     static final String C_RETURN = "C_RETURN";
     static final String C_CALL = "C_CALL";
-
     static final String CONSTANT ="constant";
     static final String ARGUMENT ="argument";
     static final String LOCAL = "local";
@@ -37,7 +36,6 @@ class Parser {
     static final String SP ="SP";
 
     Parser(File VM_File) {
-        StringBuilder stringBuilder = new StringBuilder();
         try {
             br = new BufferedReader(new FileReader(VM_File));
         } catch (FileNotFoundException e) {
@@ -50,8 +48,10 @@ class Parser {
 
     public boolean hasMoreCommand() {
         try {
+            br.mark(1024);
+            String next_Line;
             if ((next_Line = br.readLine()) != null) {
-                next_Line = remove_WhiteSpace_And_Comment(next_Line);
+                br.reset();
                 return true;
             }
         } catch (IOException e) {
@@ -65,8 +65,15 @@ class Parser {
     }
 
     public void advance() {
-        if (null != next_Line)
-            current_Line = next_Line;
+        String next_Line;
+        try {
+            if ((next_Line = br.readLine())!= null){
+                current_Line=next_Line;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public String commandType() {
