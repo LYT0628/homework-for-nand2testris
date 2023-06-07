@@ -4,12 +4,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 class CodeWriter {
+    private Map<String, String> segmentMap;
     static int LABEL_COUNT=0;
     String filename;
     BufferedWriter bw;
-
 
     CodeWriter(File asm_File) {
         try {
@@ -18,9 +20,21 @@ class CodeWriter {
             }
             filename=asm_File.getName().split("\\.")[0];
             bw = new BufferedWriter(new FileWriter(asm_File));
-        } catch (IOException e) {
+        }catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        segmentMap =new HashMap<>();
+        segmentMap.put("constant","CONSTANT");
+        segmentMap.put("local","LCL");
+        segmentMap.put("argument","ARG");
+        segmentMap.put("this","THIS");
+        segmentMap.put("that","THAT");
+        segmentMap.put("temp","TEMP");
+        segmentMap.put("pointer","POINTER");
+        segmentMap.put("temp","5");
+        segmentMap.put("pointer","3");
+
         writeLine("@256");
         writeLine("D=A");
         writeLine("@SP");
@@ -45,185 +59,74 @@ class CodeWriter {
 
     public void writeArithtic(String command) {
         if (Parser.ADD.equals(command)) {
-            arimetic_2operator_word("D=D+M");
-        } else if (Parser.SUB.equals(command)) {
-            arimetic_2operator_word("D=M-D");
-        } else if (Parser.NEG.equals(command)) {
+            arimetic_2operator("D=D+M");
+        }
+        else if (Parser.SUB.equals(command)) {
+            arimetic_2operator("D=M-D");
+        }
+        else if (Parser.NEG.equals(command)) {
             arimatic_logic_1operator("D=-D");
-        }else if (Parser.EQ.equals(command)){
-            compare_logic_2operator_word("D;JEQ");
-        }else if (Parser.LT.equals(command)){
-            compare_logic_2operator_word("D;JLT");
-        } else if (Parser.GT.equals(command)) {
-            compare_logic_2operator_word("D;JGT");
-        } else if (Parser.AND.equals(command)) {
-            compare_logic_2operator_word("D=D&M");
-        } else if (Parser.OR.equals(command)) {
-            compare_logic_2operator_word("D=D|M");
-        }else if (Parser.NOT.equals(command)){
+        }
+        else if (Parser.EQ.equals(command)){
+            compare_logic_2operator("D;JEQ");
+        }
+        else if (Parser.LT.equals(command)){
+            compare_logic_2operator("D;JLT");
+        }
+        else if (Parser.GT.equals(command)) {
+            compare_logic_2operator("D;JGT");
+        }
+        else if (Parser.AND.equals(command)) {
+            compare_logic_2operator("D=D&M");
+        }
+        else if (Parser.OR.equals(command)) {
+            compare_logic_2operator("D=D|M");
+        }
+        else if (Parser.NOT.equals(command)){
             arimatic_logic_1operator("D=!D");
         }
     }
     public void writePushPop(String Type, String command) {
         String[] arg=command.trim().split(" ");
+        String segment = arg[1];
+        String index = arg[2];
         if (Parser.C_PUSH.equals(Type)) {
-            if (Parser.CONSTANT.equals(arg[1])){
-                setDRegister("@"+arg[2]);
-                pushDRegister();
-            }else if (Parser.LOCAL.equals(command.split(" ")[1])||
-                    Parser.ARGUMENT.equals(arg[1])||
-                    Parser.THIS.equals(arg[1])||
-                    Parser.THAT.equals(arg[1])){
-                if (Parser.LOCAL.endsWith(command.split(" ")[1]))
-                    getAddressValue2DRegister("@LOCAL");
-                else if (Parser.ARGUMENT.endsWith(command.split(" ")[1]))
-                    getAddressValue2DRegister("@ARGUMENT");
-                 else if (Parser.THIS.equals(command.split(" ")[1]))
-                    getAddressValue2DRegister("@THIS");
-                 else if (Parser.THAT.equals(command.split(" ")[1]))
-                     getAddressValue2DRegister("@THAT");
-                indexDRegister("@"+command.split(" ")[2]);
-                getAddressValue2DRegister("@D");
-                pushDRegister();
+            if (Parser.CONSTANT.equalsIgnoreCase(segment)){
+                getValue2DRegister("@"+arg[2]);
+                getDRegister2SP();
             }
-            else if (Parser.TEMP.equals(arg[1])||
-                    Parser.POINT.equals(arg[1])){
-                if (Parser.TEMP.equals(command.split(" ")[1]))
-                    setDRegister("@TEMP");
-                else if (Parser.POINT.equals(command.split(" ")[1]))
-                    setDRegister("@POINT");
-                indexDRegister("@"+command.split(" ")[2]);
-                pushDRegister();
-            } else if (Parser.STATIC.equals(arg[1])) {
-                try {
-                    bw.write("@"+filename+"."+arg[2]);
-                    bw.newLine();
-                    bw.write("D=M");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("A=M");
-                    bw.newLine();
-                    bw.write("M=D");
-                    bw.newLine();
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("M=M+1");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            else if (Parser.LOCAL.equals(segment)||
+                    Parser.ARGUMENT.equals(segment)||
+                    Parser.THIS.equals(segment)||
+                    Parser.THAT.equals(segment)) {
+                push_indirect(segmentMap.get(segment),index);
             }
-        } else if (Parser.C_POP.equals(Type)) {
+            else if (Parser.TEMP.equals(segment)||
+                    Parser.POINTER.equals(segment)){
+                push_direct(segmentMap.get(segment),index);
+            }
+            else if (Parser.STATIC.equals(segment)) {
+                String value=arg[2];
+                writeLine("@"+filename+"."+value);
+                writeLine("D=M");
+                getDRegister2SP();
+            }
+        }
+        else if (Parser.C_POP.equals(Type)) {
             if (Parser.LOCAL.equals(command.split(" ")[1])||
                     Parser.ARGUMENT.equals(arg[1])||
                     Parser.THIS.equals(arg[1])||
-                    Parser.THAT.equals(arg[1])){
-                try {
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("A=A-1");
-                    bw.newLine();
-                    bw.write("D=M");
-                    bw.newLine();
-                    if (Parser.LOCAL.equals(arg[1])){
-                        bw.write("@LCL");
-                        bw.newLine();
-                        bw.write("A=M");
-                        bw.newLine();
-                        bw.write("A=A+"+arg[2]);
-                        bw.newLine();
-                        bw.write("M=D");
-                        bw.newLine();
-                        bw.write("@LCL");
-                        bw.newLine();
-                        bw.write("M=M+1");
-                        bw.newLine();
-                    } else if (Parser.ARGUMENT.equals(arg[1])) {
-                        bw.write("@ARG");
-                        bw.newLine();
-                        bw.write("A=M");
-                        bw.newLine();
-                        bw.write("A=A+"+arg[2]);
-                        bw.newLine();
-                        bw.write("M=D");
-                        bw.newLine();
-                        bw.write("@ARG");
-                        bw.newLine();
-                        bw.write("M=M+1");
-                        bw.newLine();
-                    }else if (Parser.THIS.equals(arg[1])){
-                        bw.write("@THIS");
-                        bw.newLine();
-                        bw.write("A=M");
-                        bw.newLine();
-                        bw.write("A=A+"+arg[2]);
-                        bw.newLine();
-                        bw.write("M=D");
-                        bw.newLine();
-                        bw.write("@THIS");
-                        bw.newLine();
-                        bw.write("M=M+1");
-                        bw.newLine();
-                    } else if (Parser.THAT.equals(arg[1])) {
-                        bw.write("@THAT");
-                        bw.newLine();
-                        bw.write("A=M");
-                        bw.newLine();
-                        bw.write("A=A+"+arg[2]);
-                        bw.newLine();
-                        bw.write("M=D");
-                        bw.newLine();
-                        bw.write("@THAT");
-                        bw.newLine();
-                        bw.write("M=M+1");
-                        bw.newLine();
-                    }
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("M=M-1");
-                    bw.newLine();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }else if (Parser.POINT.equals(arg[1])||
-                    Parser.TEMP.equals(arg[1])){
-                try {
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("A=A-1");
-                    bw.newLine();
-                    bw.write("D=M");
-                    bw.newLine();
-                    if (Parser.POINT.equals(arg[1])){
-                        bw.write("@3");
-                        bw.newLine();
-                        bw.write("A=M");
-                        bw.newLine();
-                        bw.write("A=A+"+arg[2]);
-                        bw.newLine();
-                        bw.write("M=D");
-                        bw.newLine();
-                    }else if (Parser.TEMP.equals(arg[1])){
-                        bw.write("@5");
-                        bw.newLine();
-                        bw.write("A=M");
-                        bw.newLine();
-                        bw.write("A=A+"+arg[2]);
-                        bw.newLine();
-                        bw.write("M=D");
-                        bw.newLine();
-                    }
-                    bw.write("@SP");
-                    bw.newLine();
-                    bw.write("M=M-1");
-                    bw.newLine();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                    Parser.THAT.equals(arg[1])) {
+                pop_indirect(segmentMap.get(segment), index);
+            }else if (Parser.POINTER.equals(segment)||
+                    Parser.TEMP.equals(segment)){
+                pop_direct(segmentMap.get(segment),index);
 
             }
+            }
         }
-    }
+
+
 
     public void close() {
         if (null!=bw){
@@ -234,7 +137,6 @@ class CodeWriter {
             }
         }
     }
-
     private  void writeLine(String word){
         try {
             bw.write(word);
@@ -251,8 +153,7 @@ class CodeWriter {
         writeLine("@SP");
         writeLine("M=M+1");
     }
-
-    private void getValue2DRegister(){
+    private void getSPValue2DRegister(){
         getAddressValue2DRegister("@SP");
     }
     private void getAddressValue2DRegister(String address){
@@ -260,19 +161,19 @@ class CodeWriter {
         writeLine("A=M");
         writeLine("D=M");
     }
-    private void setDRegister(String value){
+    private void getValue2DRegister(String value){
         writeLine(value);
         writeLine("D=A");
     }
-    private void indexDRegister(String index){
+    private void indexDRegisterByARegister(String index){
         writeLine(index);
         writeLine("D=D+A");
     }
-    private void pointer2Value(){
+    private void setARegister2SP(){
         writeLine("@SP");
         writeLine("A=M");
     }
-    private void pushDRegister(){
+    private void getDRegister2SP(){
         writeLine("@SP");
         writeLine("A=M");
         writeLine("M=D");
@@ -294,11 +195,11 @@ class CodeWriter {
         writeLine(label);
         writeLine("0;JMP");
     }
-    private void compare_logic_2operator_word(String operation){
+    private void compare_logic_2operator(String operation){
         stackPointerDown();
-        getValue2DRegister();
+        getSPValue2DRegister();
         stackPointerDown();
-        pointer2Value();
+        setARegister2SP();
         writeLine("D=M-D");
         //if D==0 then goto TRUE
         writeLine("@TRUE"+LABEL_COUNT);
@@ -308,29 +209,71 @@ class CodeWriter {
         //TRUE stack.push(-1)
         writeLine("(TRUE"+LABEL_COUNT+")");
         setDRegisterTrue();
-        pushDRegister();
+        getDRegister2SP();
         jump2Label("@END"+LABEL_COUNT);
         //FALSE stack.push(0)
         writeLine("(FALSE"+LABEL_COUNT+")");
         setDRegisterFalse();
-        pushDRegister();
+        getDRegister2SP();
         //END
         writeLine("(END"+LABEL_COUNT+")");
         LABEL_COUNT++;
     }
-    private void arimetic_2operator_word(String word){
+    private void arimetic_2operator(String word){
         stackPointerDown();
-        getValue2DRegister();
+        getSPValue2DRegister();
         stackPointerDown();
-        pointer2Value();
+        setARegister2SP();
         writeLine(word);
-        pushDRegister();
+        getDRegister2SP();
     }
     private void arimatic_logic_1operator(String word){
         stackPointerDown();
-        getValue2DRegister();
+        getSPValue2DRegister();
         writeLine(word);
-        pushDRegister();
+        getDRegister2SP();
     }
+    private void push_indirect(String from, String index){
+        getAddressValue2DRegister("@"+from);
+        indexDRegisterByARegister("@"+index);
+        getAddressValue2DRegister("@D");
+        getDRegister2SP();
+    }
+    private void push_direct(String from, String index){
+        getValue2DRegister("@"+from);
+        indexDRegisterByARegister("@"+index);
+        getDRegister2SP();
+    }
+    private void pop_indirect(String segment, String index){
+        writeLine("@"+segment);
+        writeLine("D=M");
+        writeLine("@"+index);
+        writeLine("D=A+D");//目标地址
+        stackPointerDown();
+        writeLine("@SP");
+        writeLine("A=M");
+        writeLine("A=M");//值
+        writeLine("D=A+D");
+        writeLine("A=D-A");
+        writeLine("D=D-A");
+        writeLine("M=D");
+    }
+    private void pop_direct(String segment,String index ){
+        writeLine("@"+segment);
+        writeLine("D=A");
+        writeLine("@"+index);
+        writeLine("D=A+D");//目标地址
+        stackPointerDown();
+        writeLine("@SP");
+        writeLine("A=M");
+        writeLine("A=M");//值
+        writeLine("D=A+D");
+        writeLine("A=D-A");
+        writeLine("D=D-A");
+        writeLine("M=D");
+    }
+
+
+
 
 }

@@ -5,7 +5,7 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) {
 //        File VM_File = new File(args[0]);
-        File VM_File = new File("D:\\桌面\\jack.vm");
+        File VM_File = new File("C:\\Users\\陆语庭\\Desktop\\jack.vm");
         Parser parser =new Parser(VM_File);
         File asm_File =new File(VM_File.getPath().split("\\.")[0]+".asm");
         CodeWriter codeWriter =new CodeWriter(asm_File);

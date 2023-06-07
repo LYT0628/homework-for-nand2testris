@@ -31,7 +31,7 @@ class Parser {
     static final String THIS = "this";
     static final String THAT ="that";
     static final String STATIC = "static";
-    static final String POINT ="point";
+    static final String POINTER ="pointer";
     static final String TEMP ="temp";
     static final String SP ="SP";
 
@@ -45,12 +45,11 @@ class Parser {
 
     Parser() {
     }
-
     public boolean hasMoreCommand() {
         try {
             br.mark(1024);
             String next_Line;
-            if ((next_Line = br.readLine()) != null) {
+            if ((next_Line = br.readLine()) != null&&!"".equals(next_Line)) {
                 br.reset();
                 return true;
             }
@@ -68,7 +67,7 @@ class Parser {
         String next_Line;
         try {
             if ((next_Line = br.readLine())!= null){
-                current_Line=next_Line;
+                current_Line=remove_WhiteSpace_And_Comment(next_Line);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -77,7 +76,8 @@ class Parser {
     }
 
     public String commandType() {
-        if (ADD.equals(current_Line) ||
+        if (current_Line != null &&
+                ADD.equals(current_Line) ||
                 SUB.equals(current_Line) ||
                 NEG.equals(current_Line) ||
                 EQ.equals(current_Line) ||
