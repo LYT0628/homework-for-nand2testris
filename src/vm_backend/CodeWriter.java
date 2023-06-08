@@ -118,16 +118,13 @@ class CodeWriter {
                     Parser.THIS.equals(arg[1])||
                     Parser.THAT.equals(arg[1])) {
                 pop_indirect(segmentMap.get(segment), index);
-            }else if (Parser.POINTER.equals(segment)||
+            }
+            else if (Parser.POINTER.equals(segment)||
                     Parser.TEMP.equals(segment)){
                 pop_direct(segmentMap.get(segment),index);
-
             }
             }
         }
-
-
-
     public void close() {
         if (null!=bw){
             try {
