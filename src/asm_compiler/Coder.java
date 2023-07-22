@@ -1,5 +1,6 @@
 package src.asm_compiler;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 public class Coder {
@@ -59,12 +60,7 @@ public class Coder {
     }
 
     public String int_to_bin_16(Integer integer){
-        /*
-        *
-        * def int_to_bin_16(integer):
-                return str(bin(integer))[2:].zfill(16)
-         */
-        return "";
+        return String.format("%16s", Integer.toBinaryString(integer)).replace(" ", "0");
     }
 
 
