@@ -1,4 +1,4 @@
-package src.jack_compiler.backend;
+package src.jack_compiler.vm2asm;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -113,6 +113,6 @@ class Parser {
         return currentCommand.split(" ")[2];
     }
     private String remove_WhiteSpace_And_Comment(String command) {
-        return command.trim().split("//")[0].replaceAll("  ", " ");
+        return command.trim().split("//")[0].replaceAll(" ", "");
     }
 }

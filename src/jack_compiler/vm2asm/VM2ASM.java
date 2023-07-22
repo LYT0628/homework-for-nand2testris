@@ -1,35 +1,34 @@
-package src.jack_compiler.backend;
+package src.jack_compiler.vm2asm;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
-;
 
-public class Main {
+public class VM2ASM {
     public static void main(String[] args) throws IOException {
 
-        File vmFile;// = new File(args[0]);
+        File file;// = new File(args[0]);
         CodeWriter codeWriter;
-        vmFile = new File("C:\\Users\\lyt06\\Desktop\\jack.vm");
-        vmFile = new File("C:\\Users\\lyt06\\Desktop\\test");
-        if (!vmFile.exists()){
+        file = new File("C:\\Users\\lyt06\\Desktop\\jack.vm");
+        file = new File("C:\\Users\\lyt06\\Desktop\\test");
+        if (!file.exists()){
             throw new RuntimeException("目标路径不存在文件或文件夹!!!");
         }
-        if (vmFile.isFile()){
-            String asmFilename = asmFilename(vmFile.getPath());
-            File asm_File =new File(asmFilename);
-            codeWriter =new CodeWriter(asm_File);
-            compilerVMFile(codeWriter,vmFile);
+        if (file.isFile()){
+            String asmFilename = asmFilename(file.getPath());
+            File asmFile =new File(asmFilename);
+            codeWriter =new CodeWriter(asmFile);
+            compilerVMFile(codeWriter,file);
         }
         else {
             codeWriter = new CodeWriter();
-            try(Stream<File> fileStream = Files.walk(vmFile.toPath()).map(Path::toFile).filter(Main::isVmFile)){
-                fileStream.forEach(file -> {
-                    String asmFilename = asmFilename(file.getPath());
+            try(Stream<File> fileStream = Files.walk(file.toPath()).map(Path::toFile).filter(VM2ASM::isVmFile)){
+                fileStream.forEach(vmFile -> {
+                    String asmFilename = asmFilename(vmFile.getPath());
                     try {
                         codeWriter.setFilename(asmFilename);
-                        compilerVMFile(codeWriter,file);
+                        compilerVMFile(codeWriter,vmFile);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

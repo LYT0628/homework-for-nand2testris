@@ -1,4 +1,4 @@
-package src.jack_compiler.backend;
+package src.jack_compiler.vm2asm;
 
 import java.io.*;
 import java.util.HashMap;
