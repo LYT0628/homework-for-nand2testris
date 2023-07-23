@@ -18,6 +18,12 @@ public class Parser {
         String jump = sc_index > 0 ? c_command.substring(sc_index+1) : "";
         return new String[]{dest,comp,jump};
     }
+
+    /**
+     * 移除空格和注释
+     * @version :1.0 2023/7/23
+     * @author : lyt0628
+     */
     public String  strip_whitespace_and_comments(String string){
         return string.strip().split("//")[0].replace(" ","");
     }

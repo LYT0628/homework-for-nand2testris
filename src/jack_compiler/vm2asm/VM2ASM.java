@@ -38,6 +38,11 @@ public class VM2ASM {
         codeWriter.close();
     }
 
+    /**
+     * 编译一个vm文件，要求coderWriter的输出流已经准备好
+     * @version : 1.0 2023/7/23
+     * * @author : lyt0628
+     * */
     private static void compilerVMFile(CodeWriter codeWriter,File vmFile) throws IOException {
         Parser parser = new Parser(vmFile);
         while(parser.hasMoreCommand()){
@@ -50,9 +55,21 @@ public class VM2ASM {
             }
         }
     }
+
+    /**
+     * 得到VM文件对应的asm文件名
+     * @version :1.0 2023/7/23
+     * @author : lyt0628
+     */
     private static String asmFilename(String vmFilename){
         return vmFilename.substring(0, vmFilename.lastIndexOf("."))+".asm";
     }
+
+    /**
+     * 判断是否为vm文件
+     * @version :1.0 2023/7/23
+     * @author : lyt0628
+     */
     static  boolean  isVmFile(File file){
         if (file.isDirectory()){
             return false;
