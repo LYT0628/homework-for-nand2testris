@@ -50,15 +50,21 @@ public class Jackc {
      * compiler a VM to asm
      * @author : lyt0628
      * */
-    private static void compilerVMFile(CodeWriter codeWriter,String vmFile) throws IOException {
-        Parser parser = new Parser(new File(vmFile));
+    private static void compilerVMFile(CodeWriter codeWriter,String vm) throws IOException {
+        Parser parser = new Parser(new File(vm));
         while(parser.hasMoreCommand()){
             parser.advance();
             String type = parser.commandType();
-            if (Parser.C_ARITHMETIC.equals(type)){
-                codeWriter.writeArithtic(type);
-            }else if (Parser.C_PUSH.equals(type)|| Parser.C_POP.equals(type)){
-                codeWriter.writePushPop(type, parser.arg1(),parser.arg2());
+            switch (parser.commandType()){
+                case Parser.C_ARITHMETIC:
+                    codeWriter.writeArithtic(type);
+                    break;
+                case Parser.C_PUSH:
+                case Parser.C_POP:
+                    codeWriter.writePushPop(type, parser.arg1(),parser.arg2());
+                    break;
+                default:
+                    throw new IllegalArgumentException("command is not supported");
             }
         }
     }
