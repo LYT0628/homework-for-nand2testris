@@ -1,4 +1,4 @@
-package src.asm_compiler;
+package icu.lyt;
 
 public class Parser {
     /**
