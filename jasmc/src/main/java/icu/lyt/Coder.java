@@ -54,7 +54,7 @@ public class Coder {
     public static String comp(String c){
         String a = !c.contains("M")?"0":"1";
         c = c.replace("M", "A");
-        return compMap.get(c);
+        return a+compMap.get(c);
     }
     public static String jump(String j){
         return jumpMap.get(j);

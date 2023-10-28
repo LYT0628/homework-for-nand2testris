@@ -11,7 +11,7 @@ public class Jasmc {
 
 
     private  void assemble(String filename) throws FileNotFoundException {
-        Scanner scanner = new Scanner(filename+".asm");
+        Scanner scanner = new Scanner(new File(filename+".asm"));
         PrintWriter printWriter = new PrintWriter(filename + ".hack");
         Long lineNumber = 0L;
 //        first scan, aiming to build symbolTable
@@ -22,14 +22,15 @@ public class Jasmc {
                 continue;
             }
             if (line.startsWith("(") && line.endsWith(")")){
-                String label = line.substring(1, line.length());
+                String label = line.substring(1, line.length()-1);
                 symbolTable.addLabel(label,String.valueOf(lineNumber));
                 continue;
             }
             lineNumber++;
         }
 
-        scanner.reset();
+//        scanner.reset();
+          scanner = new Scanner(new File(filename+".asm"));
 //        second scan, aiming to compile asm to hack
         while(scanner.hasNext()){
             String line = scanner.nextLine();
@@ -45,8 +46,10 @@ public class Jasmc {
                 // A指令
                 int address = 0;
                 try{
+                    //ROM
                     address = Integer.parseInt(line.substring(1));
                 }catch (Exception e){
+                    //RAM
                     address = Integer.parseInt(symbolTable.getVariable(line.substring(1)));
                 }finally {
                     writeLine = Coder.int_to_bin_16(address);
@@ -56,9 +59,10 @@ public class Jasmc {
                 String d = expression[0];
                 String c = expression[1];
                 String j = expression[2];
-                writeLine = "111"+Coder.comp(c)+Coder.comp(d)+Coder.comp(j);
+                writeLine = "111"+Coder.comp(c)+Coder.dest(d)+Coder.jump(j);
             }
             printWriter.println(writeLine);
+
         }
 
         scanner.close();
@@ -71,17 +75,18 @@ public class Jasmc {
             return;
         }
 
-        String filename = System.getProperty("user.dir") + File.separator + args[0];
+//        String filename = System.getProperty("user.dir") + File.separator + args[0];
+        String filename = args[0];
         String basename = FileUtil.basename(filename);
         String extension = FileUtil.extension(filename);
         File file = new File(filename);
-
+        System.out.println(filename);
         if(!file.exists()){
             throw new FileNotFoundException("path not exists!!!");
         }
-        if (Objects.equals(".asm",extension)){
+        if (! Objects.equals(".asm",extension)){
             throw new IllegalArgumentException("extension must be .asm!!!");
         }
-        new Jasmc().assemble(basename);
+        new Jasmc().assemble(FileUtil.filename(filename));
     }
 }

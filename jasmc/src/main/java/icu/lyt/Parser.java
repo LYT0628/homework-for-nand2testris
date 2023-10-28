@@ -13,7 +13,7 @@ public class Parser {
         int eq_index = c_command.lastIndexOf("=");
         int sc_index = c_command.lastIndexOf(";");
         String dest = eq_index > 0 ? c_command.substring(0,eq_index): "";
-        String comp = sc_index > 0 ? c_command.substring(eq_index+1,sc_index) : c_command.substring(+1);
+        String comp = sc_index > 0 ? c_command.substring(eq_index+1,sc_index) : c_command.substring(eq_index+1);
         String jump = sc_index > 0 ? c_command.substring(sc_index+1) : "";
         return new String[]{dest,comp,jump};
     }
