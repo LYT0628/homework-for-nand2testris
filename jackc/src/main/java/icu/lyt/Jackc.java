@@ -51,16 +51,16 @@ public class Jackc {
      * @author : lyt0628
      * */
     private static void compilerVMFile(CodeWriter codeWriter,String vm) throws IOException {
-        Parser parser = new Parser(new File(vm));
+        Parser parser = new Parser(vm);
         while(parser.hasMoreCommand()){
             parser.advance();
             String type = parser.commandType();
             switch (parser.commandType()){
-                case Parser.C_ARITHMETIC:
-                    codeWriter.writeArithtic(type);
+                case CommandConstant.C_ARITHMETIC:
+                    codeWriter.writeArithmetic(type);
                     break;
-                case Parser.C_PUSH:
-                case Parser.C_POP:
+                case CommandConstant.C_PUSH:
+                case CommandConstant.C_POP:
                     codeWriter.writePushPop(type, parser.arg1(),parser.arg2());
                     break;
                 default:

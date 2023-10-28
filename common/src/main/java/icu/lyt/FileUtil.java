@@ -36,7 +36,13 @@ public class FileUtil {
      * 得到VM文件对应的asm文件名
      * @author : lyt0628
      */
-    public static String asmFilename(String vmFilename){
-        return vmFilename.substring(0, vmFilename.lastIndexOf("."))+".asm";
+    public static String asmFilename(String vm){
+        return vm.substring(0, vm.lastIndexOf("."))+".asm";
+    }
+
+    public static String basename(String filename){
+       return filename.substring(
+               filename.lastIndexOf(File.separator)+1,
+               filename.lastIndexOf("."));
     }
 }
