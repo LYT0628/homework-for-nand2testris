@@ -45,4 +45,16 @@ public class FileUtil {
                filename.lastIndexOf(File.separator)+1,
                filename.lastIndexOf("."));
     }
+    public static String extension(String filename){
+        return filename.substring(filename.lastIndexOf("."));
+    }
+
+    /**
+     * get file`name having not extension
+     * @param fullFilename full filename
+     * @return file`name having not extension
+     */
+    public static String filename(String fullFilename){
+        return fullFilename.substring(0, fullFilename.lastIndexOf("."));
+    }
 }

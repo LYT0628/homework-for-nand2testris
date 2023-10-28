@@ -14,10 +14,11 @@ public class Jasmc {
         Scanner scanner = new Scanner(filename+".asm");
         PrintWriter printWriter = new PrintWriter(filename + ".hack");
         Long lineNumber = 0L;
+//        first scan, aiming to build symbolTable
         while (scanner.hasNext()){
             String line = scanner.nextLine();
             line = StrUtil.removeWhiteSpaceAndComment(line);
-            if (Objects.equals(line, " ") || line.startsWith("//")){
+            if (Objects.equals(line, "") || line.startsWith("//")){
                 continue;
             }
             if (line.startsWith("(") && line.endsWith(")")){
@@ -29,11 +30,11 @@ public class Jasmc {
         }
 
         scanner.reset();
-
+//        second scan, aiming to compile asm to hack
         while(scanner.hasNext()){
             String line = scanner.nextLine();
             line = StrUtil.removeWhiteSpaceAndComment(line);
-            if (Objects.equals(line, " ") || line.startsWith("//")){
+            if (Objects.equals(line, "") || line.startsWith("//")){
                 continue;
             }
             if (line.startsWith("(") && line.endsWith(")")){
@@ -70,16 +71,17 @@ public class Jasmc {
             return;
         }
 
-        String filename = args[0].substring(args[0].lastIndexOf(File.separator)+1,args[0].lastIndexOf("."));
-        String extension = args[0].substring(args[0].lastIndexOf("."));
+        String filename = System.getProperty("user.dir") + File.separator + args[0];
+        String basename = FileUtil.basename(filename);
+        String extension = FileUtil.extension(filename);
         File file = new File(filename);
+
         if(!file.exists()){
-            throw new RuntimeException("文件或目录不存在!!!");
+            throw new FileNotFoundException("path not exists!!!");
         }
         if (Objects.equals(".asm",extension)){
-            throw new RuntimeException("非法的文件拓展名!!!");
+            throw new IllegalArgumentException("extension must be .asm!!!");
         }
-        new Jasmc().assemble(filename);
+        new Jasmc().assemble(basename);
     }
-
 }
