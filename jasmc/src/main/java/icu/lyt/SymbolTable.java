@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SymbolTable {
-    private Map<String,String> symbolTable;
+    private final Map<String,String> symbolTable;
     private int variableAddress = 0;
-    SymbolTable(){
+    private SymbolTable(){
         symbolTable = new HashMap<>();
         symbolTable.put("SP","0");
         symbolTable.put("LCL","1");
@@ -31,11 +31,8 @@ public class SymbolTable {
         symbolTable.put("R15","15");
         symbolTable.put("SCREEN","16384");
         symbolTable.put("KBD","24576");
-
-
-
-
     }
+
     public String addLabel(String symbol, String value){
         symbolTable.put(symbol,value);
         return value;
@@ -49,5 +46,9 @@ public class SymbolTable {
         return symbolTable.get(symbol);
     }
 
-    
+    private static final SymbolTable instance = new SymbolTable();
+    public static SymbolTable getInstance(){
+        return instance;
+    }
+
 }

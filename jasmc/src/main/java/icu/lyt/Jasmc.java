@@ -7,9 +7,8 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Jasmc {
-    private SymbolTable symbolTable;
-    private Parser parser;
-    private Coder coder;
+    private final SymbolTable symbolTable = SymbolTable.getInstance();
+
 
     private  void assemble(String filename) throws FileNotFoundException {
         Scanner scanner = new Scanner(filename+".asm");
@@ -17,7 +16,7 @@ public class Jasmc {
         Long lineNumber = 0L;
         while (scanner.hasNext()){
             String line = scanner.nextLine();
-            line = parser.strip_whitespace_and_comments(line);
+            line = StrUtil.removeWhiteSpaceAndComment(line);
             if (Objects.equals(line, " ") || line.startsWith("//")){
                 continue;
             }
@@ -33,7 +32,7 @@ public class Jasmc {
 
         while(scanner.hasNext()){
             String line = scanner.nextLine();
-            line = parser.strip_whitespace_and_comments(line);
+            line = StrUtil.removeWhiteSpaceAndComment(line);
             if (Objects.equals(line, " ") || line.startsWith("//")){
                 continue;
             }
@@ -49,14 +48,14 @@ public class Jasmc {
                 }catch (Exception e){
                     address = Integer.parseInt(symbolTable.getVariable(line.substring(1)));
                 }finally {
-                    writeLine = coder.int_to_bin_16(address);
+                    writeLine = Coder.int_to_bin_16(address);
                 }
             }else {
-                String[] expression = parser.parse(line);
+                String[] expression = Parser.parse(line);
                 String d = expression[0];
                 String c = expression[1];
                 String j = expression[2];
-                writeLine = "111"+coder.comp(c)+coder.comp(d)+coder.comp(j);
+                writeLine = "111"+Coder.comp(c)+Coder.comp(d)+Coder.comp(j);
             }
             printWriter.println(writeLine);
         }
@@ -66,10 +65,11 @@ public class Jasmc {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        if (args[0].isBlank() || Objects.equals("help",args[0])){
+        if (StrUtil.isBlank(args[0]) || Objects.equals("help",args[0])){
             System.out.println("Hack assembly language file to be converted to binary code");
             return;
         }
+
         String filename = args[0].substring(args[0].lastIndexOf(File.separator)+1,args[0].lastIndexOf("."));
         String extension = args[0].substring(args[0].lastIndexOf("."));
         File file = new File(filename);

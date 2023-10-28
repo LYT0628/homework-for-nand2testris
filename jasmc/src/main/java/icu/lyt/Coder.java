@@ -1,13 +1,14 @@
 package icu.lyt;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Coder {
-    public static Map<String, String> destMap;
-    public static Map<String, String> compMap;
-    public static Map<String, String> jumpMap;
-    Coder(){
+    public static Map<String, String> destMap = new HashMap<>();
+    public static Map<String, String> compMap = new HashMap<>();
+    public static Map<String, String> jumpMap = new HashMap<>();
+    static {
         destMap.put("","000");
         destMap.put("M","001");
         destMap.put("D","010");
@@ -47,19 +48,19 @@ public class Coder {
     }
 
 
-    public String dest(String d){
+    public static String dest(String d){
         return  destMap.get(d);
     }
-    public String comp(String c){
+    public static String comp(String c){
         String a = !c.contains("M")?"0":"1";
         c = c.replace("M", "A");
         return compMap.get(c);
     }
-    public String jump(String j){
+    public static String jump(String j){
         return jumpMap.get(j);
     }
 
-    public String int_to_bin_16(Integer integer){
+    public static String int_to_bin_16(Integer integer){
         return String.format("%16s", Integer.toBinaryString(integer)).replace(" ", "0");
     }
 

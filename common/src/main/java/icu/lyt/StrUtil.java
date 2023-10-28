@@ -6,5 +6,9 @@ public class StrUtil {
         return command.trim().split("//")[0].replaceAll(" ", "");
     }
 
+    public static boolean isBlank(String str){
+        return str == null || str.isEmpty();
+    }
+
 
 }
