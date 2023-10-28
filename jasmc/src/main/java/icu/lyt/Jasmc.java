@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class AsmCompiler {
+public class Jasmc {
     private SymbolTable symbolTable;
     private Parser parser;
     private Coder coder;
@@ -79,7 +79,7 @@ public class AsmCompiler {
         if (Objects.equals(".asm",extension)){
             throw new RuntimeException("非法的文件拓展名!!!");
         }
-        new AsmCompiler().assemble(filename);
+        new Jasmc().assemble(filename);
     }
 
 }

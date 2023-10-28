@@ -9,7 +9,7 @@ class CodeWriter {
     static int LABEL_COUNT=0;
     String filename;
     PrintWriter writer;
-    CodeWriter(File asm_File) throws FileNotFoundException {
+    CodeWriter(String asm) throws FileNotFoundException {
         /* 内存段Map初始化*******************************************************************************************/
         segmentMap =new HashMap<>();
         segmentMap.put("constant","CONSTANT");
@@ -23,9 +23,9 @@ class CodeWriter {
         segmentMap.put("pointer","3");
 
 
-        filename = asm_File.getName().substring(0,asm_File.getName().lastIndexOf("."));
+        filename = asm.substring(0,asm.lastIndexOf("."));
         /* 内存的初始化操作*******************************************************************************************/
-        writer = new PrintWriter(asm_File);
+        writer = new PrintWriter(asm);
         writer.println("@256");
         writer.println("D=A");
         writer.println("@SP");
