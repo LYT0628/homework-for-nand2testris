@@ -21,7 +21,7 @@ public class FileUtil {
         return results;
     }
 
-    static  boolean  isVmFile(File file){
+    public static  boolean  isVmFile(File file){
         if (file.isDirectory()){
             return false;
         }

@@ -1,7 +1,15 @@
 package icu.lyt;
 
 
-import java.io.*;
+
+
+import icu.lyt.FileUtil;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -21,21 +29,25 @@ public class Jackc {
      * @param args args
      * @throws IOException
      */
-    public static void main0(String[] args) throws IOException {
+    private static void main0(String[] args)  {
+        if (args.length <1){
+            throw new IllegalArgumentException("path is needed!!!");
+        }
         File path = new File(args[0]);
         if (!path.exists()){
             throw new IllegalArgumentException("path is not exits!!!");
         }
 
         CodeWriter codeWriter = new CodeWriter();
-        FileUtil.walk(path)
+        List<String> collect = FileUtil.walk(path)
                 .stream()
                 .filter(FileUtil::isVmFile)
                 .map(File::getPath)
-                .collect(Collectors.toList())
+                .collect(Collectors.toList());
+        collect
                 .forEach(vm->{
                     try{
-                        codeWriter.setFilename(vm);
+                        codeWriter.setFilename(FileUtil.filename(vm)+".asm");
                         compilerVMFile(codeWriter,vm);
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
@@ -55,9 +67,10 @@ public class Jackc {
         while(parser.hasMoreCommand()){
             parser.advance();
             String type = parser.commandType();
+
             switch (parser.commandType()){
                 case CommandConstant.C_ARITHMETIC:
-                    codeWriter.writeArithmetic(type);
+                    codeWriter.writeArithmetic(parser.command());
                     break;
                 case CommandConstant.C_PUSH:
                 case CommandConstant.C_POP:

@@ -1,5 +1,9 @@
 package icu.lyt;
 
+import icu.lyt.StrUtil;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /**
@@ -9,8 +13,8 @@ class Parser {
     private String currentCommand;
     private Scanner scanner =null;
 
-    Parser(String vm) {
-        scanner = new Scanner(vm);
+    Parser(String vm) throws FileNotFoundException {
+        scanner = new Scanner(new File(vm));
     }
     Parser() {}
 
@@ -19,8 +23,14 @@ class Parser {
     }
     public void advance() {
       currentCommand = StrUtil.removeWhiteSpaceAndComment(scanner.nextLine());
+      if (currentCommand.isEmpty()){
+          advance();
+      }
     }
 
+    public String command(){
+        return currentCommand;
+    }
 
     public String commandType() {
         if (currentCommand != null && Parser.isArithmeticCommand(currentCommand)) {
@@ -33,7 +43,7 @@ class Parser {
             return CommandConstant.C_POP;
         }
 
-        throw new RuntimeException("command: "+currentCommand+"is not supported!!!");
+        throw new RuntimeException("command: "+currentCommand+" is not supported!!!");
     }
 
 

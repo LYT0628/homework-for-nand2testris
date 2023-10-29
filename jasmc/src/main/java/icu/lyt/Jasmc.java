@@ -18,7 +18,7 @@ public class Jasmc {
         while (scanner.hasNext()){
             String line = scanner.nextLine();
             line = StrUtil.removeWhiteSpaceAndComment(line);
-            if (Objects.equals(line, "") || line.startsWith("//")){
+            if (Objects.equals(line, " ") || line.startsWith("//")){
                 continue;
             }
             if (line.startsWith("(") && line.endsWith(")")){
@@ -35,7 +35,7 @@ public class Jasmc {
         while(scanner.hasNext()){
             String line = scanner.nextLine();
             line = StrUtil.removeWhiteSpaceAndComment(line);
-            if (Objects.equals(line, "") || line.startsWith("//")){
+            if (Objects.equals(line, " ") || line.startsWith("//")){
                 continue;
             }
             if (line.startsWith("(") && line.endsWith(")")){
